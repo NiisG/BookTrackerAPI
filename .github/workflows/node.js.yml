@@ -1,5 +1,6 @@
-name: Node.js CI
+name: Bun CI (NestJS)
 
+# Trigger workflow on pushes and PRs to main
 on:
   push:
     branches: ["main"]
@@ -10,29 +11,43 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [22.x]
-
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Check out the repository so Actions can acces our code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # 2️⃣ Install Bun via the official setup action
+      # oven-sh/setup-bun sets up Bun, adds it to PATH, and caches the binary internally
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      # 3️⃣ Cache Bun dependencies for faster installs
+      # ~/.bun      → Bun’s global binary/cache directory
+      # ~/.cache/bun → Often used for package-level caching (like npm/yarn)
+      # The key ensures cache invalidation when bun.lockb changes
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          path: |
+            ~/.bun
+            ~/.cache/bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
+      # 4️⃣ Install dependencies using Bun
+      # This step will skip downloading modules that are already cached
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
+      # 5️⃣ Build the NestJS project with Bun
       - name: Build
         run: bun run build
 
+      # 6️⃣ Run test suite
       - name: Run tests
         run: bun run test
+
+      # 7️⃣ (Optional) Lint codebase
