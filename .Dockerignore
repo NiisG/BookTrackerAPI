@@ -1,0 +1,57 @@
+// Dockerignore
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+coverage
+*.log
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.husky
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+
+# Tests
+test
+*.spec.ts
+*.test.ts
+jest.config.js
+
+# Config files (not needed in runtime, but needed for build)
+.prettierrc
+.prettierignore
+.eslintrc.js
+eslint.config.mjs
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
